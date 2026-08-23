@@ -1,5 +1,9 @@
 # Nexora — 导航中枢
 
+> 科技驱动的书签导航系统
+> 
+> 仓库: [github.com/IuuAI/nexora](https://github.com/IuuAI/nexora)
+
 一个极具科技感的书签导航系统，支持响应式布局、明暗主题、分类二级分组、加密与公开选择。
 
 ## ✨ 特性
