@@ -6,6 +6,14 @@ services:
     container_name: nexora
     restart: unless-stopped
     ports:
-      - "8080:80"
+      - "8080:8080"
     environment:
       - TZ=Asia/Shanghai
+      - NEXORA_ADMIN_PASS=${NEXORA_ADMIN_PASS:-nexora2024}
+      - NEXORA_TOKEN_SECRET=${NEXORA_TOKEN_SECRET:-change-this-secret}
+    volumes:
+      - nexora-data:/data
+
+volumes:
+  nexora-data:
+    driver: local

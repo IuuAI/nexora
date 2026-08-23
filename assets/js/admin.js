@@ -1,47 +1,80 @@
-// ===== Nexora — 管理控制台逻辑 =====
+// ===== Nexora — 管理控制台逻辑 (API版) =====
 
-const STORAGE_KEY = 'nexora_data';
-const ADMIN_PASS_KEY = 'nexora_admin_pass';
-const DEFAULT_PASSWORD = 'nexora2024';
+const API_BASE = window.location.origin;
+const TOKEN_KEY = 'nexora_admin_token';
+
+let bookmarks = [];
+let isAdmin = false;
 
 document.addEventListener('DOMContentLoaded', () => {
-    if (!localStorage.getItem(ADMIN_PASS_KEY)) {
-        localStorage.setItem(ADMIN_PASS_KEY, hashPassword(DEFAULT_PASSWORD));
-    }
+    checkAuth();
     document.getElementById('loginForm').addEventListener('submit', handleLogin);
 });
+
+async function apiRequest(endpoint, options = {}) {
+    const headers = { 'Content-Type': 'application/json', ...options.headers };
+    const token = localStorage.getItem(TOKEN_KEY);
+    if (token) headers['X-Admin-Token'] = token;
+    
+    try {
+        const res = await fetch(`${API_BASE}${endpoint}`, { ...options, headers });
+        if (res.status === 401) {
+            localStorage.removeItem(TOKEN_KEY);
+            isAdmin = false;
+            return { error: 'Unauthorized' };
+        }
+        return await res.json();
+    } catch (err) {
+        console.error('API Error:', err);
+        alert('网络错误，请检查连接');
+        return { error: err.message };
+    }
+}
+
+async function checkAuth() {
+    const token = localStorage.getItem(TOKEN_KEY);
+    if (!token) return;
+    
+    const result = await apiRequest('/api/bookmarks');
+    if (!result.error) {
+        isAdmin = true;
+        showAdminPanel();
+    }
+}
 
 function handleLogin(e) {
     e.preventDefault();
     const pwd = document.getElementById('adminPassword').value;
-    if (hashPassword(pwd) === localStorage.getItem(ADMIN_PASS_KEY)) {
-        localStorage.setItem('nexora_logged_in', 'true');
-        showAdminPanel();
-    } else {
-        alert('密码错误！');
-    }
-}
-
-function hashPassword(pwd) {
-    let hash = 0;
-    for (let i = 0; i < pwd.length; i++) {
-        const char = pwd.charCodeAt(i);
-        hash = ((hash << 5) - hash) + char;
-        hash = hash & hash;
-    }
-    return hash.toString(16);
+    
+    apiRequest('/api/login', {
+        method: 'POST',
+        body: JSON.stringify({ password: pwd })
+    }).then(res => {
+        if (res.token) {
+            localStorage.setItem(TOKEN_KEY, res.token);
+            isAdmin = true;
+            showAdminPanel();
+        } else {
+            alert('密码错误！');
+        }
+    });
 }
 
 function showAdminPanel() {
     document.getElementById('loginPanel').style.display = 'none';
     document.getElementById('adminPanel').style.display = 'block';
+    loadAndRenderBookmarks();
+}
+
+async function loadAndRenderBookmarks() {
+    const data = await apiRequest('/api/bookmarks');
+    bookmarks = Array.isArray(data) ? data : [];
     renderCategoryList();
     renderBookmarkList();
 }
 
 function renderCategoryList() {
     const container = document.getElementById('categoryList');
-    const bookmarks = getBookmarks();
     const categories = [...new Set(bookmarks.map(b => b.category))];
     
     let html = '';
@@ -69,7 +102,6 @@ function renderCategoryList() {
 
 function renderBookmarkList() {
     const container = document.getElementById('bookmarkList');
-    const bookmarks = getBookmarks();
     
     let html = '';
     bookmarks.forEach((bm, idx) => {
@@ -81,7 +113,7 @@ function renderBookmarkList() {
                     <div class="bookmark-tags">
                         <span class="tag">${escapeHtml(bm.category)}</span>
                         <span class="tag">${escapeHtml(bm.subcategory || '其他')}</span>
-                        ${bm.isPrivate ? '<span class="tag private">加密</span>' : ''}
+                        ${bm.is_private ? '<span class="tag private">加密</span>' : ''}
                     </div>
                 </div>
                 <button class="btn btn-edit" onclick="editBookmark(${idx})">编辑</button>
@@ -107,7 +139,6 @@ function showAddCategory() {
 }
 
 function showAddBookmark() {
-    const bookmarks = getBookmarks();
     const categories = [...new Set(bookmarks.map(b => b.category))];
     
     showModal(`
@@ -143,56 +174,57 @@ function showAddBookmark() {
     `);
 }
 
-function addCategory(e) {
+async function addCategory(e) {
     e.preventDefault();
-    const bookmarks = getBookmarks();
     const name = document.getElementById('catName').value.trim();
+    const existing = bookmarks.some(b => b.category === name);
     
-    if (bookmarks.some(b => b.category === name)) {
+    if (existing) {
         alert('分类已存在！');
         return;
     }
     
-    saveBookmarks([...bookmarks, {
-        name: `[分类] ${name}`, url: '#', category: name, subcategory: '', isPrivate: false, desc: ''
-    }]);
+    await apiRequest('/api/bookmarks', {
+        method: 'POST',
+        body: JSON.stringify({ name, url: '#', category: name, subcategory: '', desc: '', isPrivate: false })
+    });
     closeModal();
-    renderCategoryList();
+    loadAndRenderBookmarks();
 }
 
-function addBookmark(e) {
+async function addBookmark(e) {
     e.preventDefault();
-    const bookmarks = getBookmarks();
-    bookmarks.push({
+    const data = {
         name: document.getElementById('bmName').value.trim(),
         url: document.getElementById('bmUrl').value.trim(),
         desc: document.getElementById('bmDesc').value.trim(),
         category: document.getElementById('bmCategory').value,
         subcategory: document.getElementById('bmSubcategory').value.trim(),
         isPrivate: document.getElementById('bmPrivate').checked
-    });
-    saveBookmarks(bookmarks);
+    };
+    
+    await apiRequest('/api/bookmarks', { method: 'POST', body: JSON.stringify(data) });
     closeModal();
-    renderBookmarkList();
+    loadAndRenderBookmarks();
 }
 
-function deleteCategory(name) {
+async function deleteCategory(name) {
     if (!confirm(`确定删除分类 "${name}" 及其所有书签？`)) return;
-    saveBookmarks(getBookmarks().filter(b => b.category !== name));
-    renderCategoryList();
-    renderBookmarkList();
+    
+    const toDelete = bookmarks.filter(b => b.category === name);
+    for (const bm of toDelete) {
+        await apiRequest(`/api/bookmarks/${bm.id}`, { method: 'DELETE' });
+    }
+    loadAndRenderBookmarks();
 }
 
-function deleteBookmark(idx) {
+async function deleteBookmark(idx) {
     if (!confirm('确定删除此书签？')) return;
-    const bookmarks = getBookmarks();
-    bookmarks.splice(idx, 1);
-    saveBookmarks(bookmarks);
-    renderBookmarkList();
+    await apiRequest(`/api/bookmarks/${bookmarks[idx].id}`, { method: 'DELETE' });
+    loadAndRenderBookmarks();
 }
 
-function editBookmark(idx) {
-    const bookmarks = getBookmarks();
+async function editBookmark(idx) {
     const bm = bookmarks[idx];
     const categories = [...new Set(bookmarks.map(b => b.category))];
     
@@ -209,16 +241,16 @@ function editBookmark(idx) {
                 </select>
             </div>
             <div class="form-group"><label>二级分类</label><input type="text" id="editSub" value="${escapeHtml(bm.subcategory || '')}"></div>
-            <div class="form-group"><label><input type="checkbox" id="editPrivate" ${bm.isPrivate ? 'checked' : ''}> 加密</label></div>
+            <div class="form-group"><label><input type="checkbox" id="editPrivate" ${bm.is_private ? 'checked' : ''}> 加密</label></div>
             <button type="submit" class="btn btn-primary">保存</button>
         </form>
     `);
 }
 
-function saveEditBookmark(idx, e) {
+async function saveEditBookmark(idx, e) {
     e.preventDefault();
-    const bookmarks = getBookmarks();
-    bookmarks[idx] = {
+    const bm = bookmarks[idx];
+    const data = {
         name: document.getElementById('editName').value.trim(),
         url: document.getElementById('editUrl').value.trim(),
         desc: document.getElementById('editDesc').value.trim(),
@@ -226,9 +258,10 @@ function saveEditBookmark(idx, e) {
         subcategory: document.getElementById('editSub').value.trim(),
         isPrivate: document.getElementById('editPrivate').checked
     };
-    saveBookmarks(bookmarks);
+    
+    await apiRequest(`/api/bookmarks/${bm.id}`, { method: 'PUT', body: JSON.stringify(data) });
     closeModal();
-    renderBookmarkList();
+    loadAndRenderBookmarks();
 }
 
 function showModal(html) {
@@ -243,15 +276,6 @@ function closeModal() {
 document.getElementById('modal').addEventListener('click', (e) => {
     if (e.target.id === 'modal') closeModal();
 });
-
-function getBookmarks() {
-    const data = localStorage.getItem(STORAGE_KEY);
-    return data ? JSON.parse(data) : [];
-}
-
-function saveBookmarks(bookmarks) {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(bookmarks));
-}
 
 function escapeHtml(text) {
     const div = document.createElement('div');

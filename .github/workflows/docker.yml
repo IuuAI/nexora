@@ -2,6 +2,7 @@ name: Build Docker Image
 on:
   push:
     branches: [main]
+  workflow_dispatch:
 
 jobs:
   build:
@@ -24,3 +25,5 @@ jobs:
           context: .
           push: true
           tags: ${{ secrets.DOCKER_USERNAME }}/nexora:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max

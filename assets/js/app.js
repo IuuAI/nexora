@@ -1,7 +1,8 @@
-// ===== Nexora — 导航中枢前端逻辑 =====
+// ===== Nexora — 导航中枢前端逻辑 (API版) =====
 
-const STORAGE_KEY = 'nexora_data';
+const API_BASE = window.location.origin;
 const THEME_KEY = 'nexora_theme';
+const TOKEN_KEY = 'nexora_admin_token';
 const CATEGORIES_DATA = {
     work: { icon: '💼', name: '工作' },
     life: { icon: '🏠', name: '生活' },
@@ -11,12 +12,33 @@ const CATEGORIES_DATA = {
     media: { icon: '🎬', name: '娱乐' }
 };
 
+let bookmarks = [];
+let isAdmin = false;
+
 document.addEventListener('DOMContentLoaded', () => {
     initTheme();
-    renderCategories();
+    loadBookmarks();
     setupEventListeners();
-    loadSampleData();
 });
+
+async function apiRequest(endpoint, options = {}) {
+    const headers = { 'Content-Type': 'application/json', ...options.headers };
+    const token = localStorage.getItem(TOKEN_KEY);
+    if (token) headers['X-Admin-Token'] = token;
+    
+    try {
+        const res = await fetch(`${API_BASE}${endpoint}`, { ...options, headers });
+        if (res.status === 401) {
+            localStorage.removeItem(TOKEN_KEY);
+            isAdmin = false;
+            return { error: 'Unauthorized' };
+        }
+        return await res.json();
+    } catch (err) {
+        console.error('API Error:', err);
+        return { error: err.message };
+    }
+}
 
 function initTheme() {
     const saved = localStorage.getItem(THEME_KEY) || 'light';
@@ -46,9 +68,14 @@ function setupEventListeners() {
     });
 }
 
+async function loadBookmarks() {
+    const data = await apiRequest('/api/bookmarks');
+    bookmarks = Array.isArray(data) ? data : [];
+    renderCategories();
+}
+
 function renderCategories(filter = 'all', search = '') {
     const container = document.getElementById('categoriesContainer');
-    const bookmarks = getBookmarks();
     
     let html = '';
     const categories = Object.keys(CATEGORIES_DATA);
@@ -112,14 +139,14 @@ function renderCategories(filter = 'all', search = '') {
         html += '</div></article>';
     });
     
-    container.innerHTML = html || '<p style="text-align:center;color:var(--text-muted);grid-column:1/-1;padding:40px">暂无书签，点击右下角 ⚙️ 进入控制台添加</p>';
+    container.innerHTML = html || '<p style="text-align:center;color:var(--text-muted);grid-column:1/-1;padding:40px">暂无书签</p>';
 }
 
 function createBookmarkItem(bookmark) {
     try {
         const domain = new URL(bookmark.url).hostname;
         const favicon = `https://www.google.com/s2/favicons?domain=${domain}&sz=64`;
-        const isPrivate = bookmark.isPrivate;
+        const isPrivate = bookmark.is_private;
         
         return `
             <li class="bookmark-item">
@@ -149,29 +176,4 @@ function debounce(fn, delay) {
         clearTimeout(timer);
         timer = setTimeout(() => fn.apply(this, args), delay);
     };
-}
-
-function getBookmarks() {
-    const data = localStorage.getItem(STORAGE_KEY);
-    return data ? JSON.parse(data) : [];
-}
-
-function loadSampleData() {
-    if (getBookmarks().length === 0) {
-        const sample = [
-            { name: "GitHub", url: "https://github.com", desc: "代码托管平台", category: "tech", subcategory: "开发工具", isPrivate: false },
-            { name: "Stack Overflow", url: "https://stackoverflow.com", desc: "开发者问答社区", category: "tech", subcategory: "学习资源", isPrivate: false },
-            { name: "Vercel", url: "https://vercel.com", desc: "前端部署平台", category: "tech", subcategory: "开发工具", isPrivate: false },
-            { name: "Notion", url: "https://notion.so", desc: "笔记与知识管理", category: "work", subcategory: "效率工具", isPrivate: false },
-            { name: "Figma", url: "https://figma.com", desc: "协作设计工具", category: "work", subcategory: "设计工具", isPrivate: false },
-            { name: "YouTube", url: "https://youtube.com", desc: "视频平台", category: "media", subcategory: "视频", isPrivate: false },
-            { name: "网易云音乐", url: "https://music.163.com", desc: "音乐流媒体", category: "media", subcategory: "音乐", isPrivate: false },
-            { name: "Bilibili", url: "https://bilibili.com", desc: "视频弹幕网站", category: "media", subcategory: "视频", isPrivate: false },
-            { name: "淘宝", url: "https://taobao.com", desc: "购物平台", category: "life", subcategory: "购物", isPrivate: false },
-            { name: "百度网盘", url: "https://pan.baidu.com", desc: "云存储服务", category: "life", subcategory: "云存储", isPrivate: false },
-            { name: "个人密码库", url: "https://1password.com", desc: "密码管理工具", category: "tools", subcategory: "安全", isPrivate: true },
-            { name: "服务器管理后台", url: "https://dashboard.example.com", desc: "内部运维系统", category: "work", subcategory: "运维", isPrivate: true }
-        ];
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(sample));
-    }
 }
