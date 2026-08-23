@@ -28,6 +28,43 @@
         </div>
 
         <div class="admin-panel" id="adminPanel" style="display:none;">
+            <!-- 站点设置 -->
+            <section class="admin-section">
+                <h3>⚙️ 站点设置</h3>
+                <div class="settings-form">
+                    <div class="form-group">
+                        <label>站点名称</label>
+                        <input type="text" id="siteName" placeholder="Nexora">
+                    </div>
+                    <div class="form-group">
+                        <label>站点副标题</label>
+                        <input type="text" id="siteSubtitle" placeholder="科技驱动的导航中枢">
+                    </div>
+                    <button class="btn btn-primary" onclick="saveSiteSettings()">保存设置</button>
+                </div>
+            </section>
+
+            <!-- 数据管理 -->
+            <section class="admin-section">
+                <h3>📦 数据管理</h3>
+                <div class="data-actions">
+                    <button class="btn btn-secondary" onclick="exportData()">📤 导出数据</button>
+                    <button class="btn btn-secondary" onclick="showImportModal()">📥 导入数据</button>
+                    <button class="btn btn-warning" onclick="createBackup()">💾 创建备份</button>
+                    <button class="btn btn-danger" onclick="resetAllData()">🗑️ 重置数据</button>
+                </div>
+            </section>
+
+            <!-- WebDAV 备份 -->
+            <section class="admin-section">
+                <h3>🔐 备份管理</h3>
+                <div class="backup-info">
+                    <p>已创建 <span id="backupCount">0</span> 个备份</p>
+                    <button class="btn btn-secondary" onclick="refreshBackups()">🔄 刷新列表</button>
+                </div>
+                <div class="backup-list" id="backupList"></div>
+            </section>
+
             <section class="admin-section">
                 <h3>分类管理</h3>
                 <div class="section-actions">

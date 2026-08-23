@@ -13,7 +13,10 @@ services:
       - NEXORA_TOKEN_SECRET=${NEXORA_TOKEN_SECRET:-change-this-secret}
     volumes:
       - nexora-data:/data
+      - nexora-backups:/data/backups
 
 volumes:
   nexora-data:
+    driver: local
+  nexora-backups:
     driver: local

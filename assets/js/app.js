@@ -2,7 +2,6 @@
 
 const API_BASE = window.location.origin;
 const THEME_KEY = 'nexora_theme';
-const TOKEN_KEY = 'nexora_admin_token';
 const CATEGORIES_DATA = {
     work: { icon: '💼', name: '工作' },
     life: { icon: '🏠', name: '生活' },
@@ -13,26 +12,17 @@ const CATEGORIES_DATA = {
 };
 
 let bookmarks = [];
-let isAdmin = false;
 
 document.addEventListener('DOMContentLoaded', () => {
     initTheme();
+    loadSettings();
     loadBookmarks();
     setupEventListeners();
 });
 
 async function apiRequest(endpoint, options = {}) {
-    const headers = { 'Content-Type': 'application/json', ...options.headers };
-    const token = localStorage.getItem(TOKEN_KEY);
-    if (token) headers['X-Admin-Token'] = token;
-    
     try {
-        const res = await fetch(`${API_BASE}${endpoint}`, { ...options, headers });
-        if (res.status === 401) {
-            localStorage.removeItem(TOKEN_KEY);
-            isAdmin = false;
-            return { error: 'Unauthorized' };
-        }
+        const res = await fetch(`${API_BASE}${endpoint}`, { ...options });
         return await res.json();
     } catch (err) {
         console.error('API Error:', err);
@@ -49,6 +39,18 @@ function initTheme() {
         document.documentElement.setAttribute('data-theme', next);
         localStorage.setItem(THEME_KEY, next);
     });
+}
+
+async function loadSettings() {
+    const settings = await apiRequest('/api/settings');
+    if (settings.site_name) {
+        document.getElementById('siteTitle').textContent = settings.site_name;
+        document.title = `${settings.site_name} — 导航中枢`;
+        document.getElementById('siteFooter').textContent = `${settings.site_name} &copy; 2026`;
+    }
+    if (settings.site_subtitle) {
+        document.getElementById('siteSubtitle').textContent = settings.site_subtitle;
+    }
 }
 
 function setupEventListeners() {

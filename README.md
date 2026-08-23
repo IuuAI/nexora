@@ -15,8 +15,29 @@
 - **搜索功能** — 实时搜索书签
 - **模块化架构** — 页头、主体、页脚分离
 - **纯 CSS** — 无框架依赖，轻量快速
+- **站点设置** — 自定义站点名称和副标题
+- **数据导入/导出** — JSON 格式备份恢复
+- **WebDAV 备份** — 自动备份到远程存储
 
-## 🗄️ 数据存储
+## 📦 数据管理
+
+### 导出/导入
+1. 进入管理控制台 `/admin/`
+2. 点击「导出数据」下载 JSON 文件
+3. 点击「导入数据」选择文件恢复
+
+### 备份管理
+1. 点击「创建备份」生成 ZIP 备份文件
+2. 在「备份管理」查看历史备份
+3. 可下载备份到本地或上传到 WebDAV
+
+### WebDAV 同步
+```bash
+# 下载最新备份到 WebDAV
+curl -T $(ls -t /data/backups/*.zip | head -1) \
+  -u USERNAME:PASSWORD \
+  webdav://your-server/path/
+```
 
 | 部署方式 | 存储方案 |
 |----------|----------|
@@ -122,11 +143,15 @@ nexora/
 
 ### Docker 部署
 
-修改 `docker-compose.yml`：
-```yaml
-environment:
-  - NEXORA_ADMIN_PASS=your_password    # 管理密码
-  - NEXORA_TOKEN_SECRET=your_secret   # Token 密钥
+修改 `.env` 文件：
+```bash
+NEXORA_ADMIN_PASS=your_password    # 管理密码
+NEXORA_TOKEN_SECRET=your_secret   # Token 密钥
+```
+
+启动：
+```bash
+docker-compose up -d
 ```
 
 ### Cloudflare 部署

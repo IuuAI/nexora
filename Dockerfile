@@ -18,11 +18,12 @@ COPY assets/ assets/
 COPY admin/ admin/
 
 # 创建数据目录
-RUN mkdir -p /data
+RUN mkdir -p /data/backups
 
 # 设置环境变量
 ENV PORT=8080
 ENV NEXORA_DB=/data/nexora.db
+ENV NEXORA_BACKUP_DIR=/data/backups
 ENV TZ=Asia/Shanghai
 
 # 暴露端口
