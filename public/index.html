@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nexora — 导航中枢</title>
+    <link rel="stylesheet" href="/assets/css/style.css">
+</head>
+<body>
+    <!-- 页头 -->
+    <header class="header">
+        <div class="header-inner">
+            <div class="logo">
+                <span class="logo-icon">◈</span>
+                <span class="logo-text">Nexora</span>
+            </div>
+            <nav class="nav-links">
+                <a href="#" class="nav-item active" data-filter="all">全部</a>
+                <a href="#" class="nav-item" data-filter="work">工作</a>
+                <a href="#" class="nav-item" data-filter="life">生活</a>
+                <a href="#" class="nav-item" data-filter="tech">技术</a>
+            </nav>
+            <button class="theme-toggle" id="themeToggle" aria-label="切换主题">
+                <span class="theme-icon sun">☀️</span>
+                <span class="theme-icon moon">🌙</span>
+            </button>
+        </div>
+    </header>
+
+    <!-- 主体 -->
+    <main class="main">
+        <div class="search-bar">
+            <input type="text" id="searchInput" placeholder="搜索书签..." autocomplete="off">
+            <span class="search-icon">🔍</span>
+        </div>
+        <div class="categories-container" id="categoriesContainer"></div>
+    </main>
+
+    <!-- 页脚 -->
+    <footer class="footer">
+        <div class="footer-inner">
+            <p>Nexora &copy; 2026</p>
+            <p class="footer-note">科技驱动的导航中枢</p>
+        </div>
+    </footer>
+
+    <!-- 功能按钮 -->
+    <button class="fab-btn" id="fabBtn" title="管理控制台">⚙️</button>
+
+    <script src="/assets/js/app.js"></script>
+</body>
+</html>

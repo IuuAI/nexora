@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nexora — 管理控制台</title>
+    <link rel="stylesheet" href="/assets/css/admin.css">
+</head>
+<body>
+    <header class="admin-header">
+        <div class="admin-logo">
+            <span>◈</span>
+            <span>管理控制台</span>
+        </div>
+        <a href="/" class="back-btn">返回首页</a>
+    </header>
+
+    <main class="admin-main">
+        <div class="login-panel" id="loginPanel">
+            <h2>管理员登录</h2>
+            <form id="loginForm">
+                <div class="form-group">
+                    <label>访问密码</label>
+                    <input type="password" id="adminPassword" placeholder="请输入管理密码" required>
+                </div>
+                <button type="submit" class="btn btn-primary">登录</button>
+            </form>
+        </div>
+
+        <div class="admin-panel" id="adminPanel" style="display:none;">
+            <section class="admin-section">
+                <h3>分类管理</h3>
+                <div class="section-actions">
+                    <button class="btn btn-add" onclick="showAddCategory()">+ 添加分类</button>
+                </div>
+                <div class="category-list" id="categoryList"></div>
+            </section>
+
+            <section class="admin-section">
+                <h3>书签管理</h3>
+                <div class="section-actions">
+                    <button class="btn btn-add" onclick="showAddBookmark()">+ 添加书签</button>
+                </div>
+                <div class="bookmark-list" id="bookmarkList"></div>
+            </section>
+        </div>
+    </main>
+
+    <div class="modal" id="modal">
+        <div class="modal-content">
+            <span class="modal-close" onclick="closeModal()">&times;</span>
+            <div id="modalBody"></div>
+        </div>
+    </div>
+
+    <script src="/assets/js/admin.js"></script>
+</body>
+</html>

@@ -1,0 +1,11 @@
+version: '3.8'
+
+services:
+  nexora:
+    build: .
+    container_name: nexora
+    restart: unless-stopped
+    ports:
+      - "8080:80"
+    environment:
+      - TZ=Asia/Shanghai
