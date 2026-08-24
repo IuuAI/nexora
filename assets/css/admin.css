@@ -51,10 +51,29 @@ body {
 .admin-logo {
     display: flex;
     align-items: center;
-    gap: 0.5rem;
+    gap: 1rem;
+}
+
+.back-link {
+    color: var(--accent-color);
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 1.1rem;
+}
+
+.back-link:hover {
+    text-decoration: underline;
+}
+
+.page-title {
     font-size: 1.25rem;
     font-weight: 600;
-    color: var(--accent-color);
+    color: var(--text-primary);
+}
+
+.header-actions {
+    display: flex;
+    gap: 0.5rem;
 }
 
 .back-btn {
@@ -366,6 +385,134 @@ body {
 
 .modal-close:hover {
     color: var(--text-primary);
+}
+
+/* 登录页样式 */
+.login-container {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--bg-primary);
+    padding: 2rem;
+}
+
+.login-card {
+    background: var(--bg-secondary);
+    padding: 3rem;
+    border-radius: 16px;
+    box-shadow: var(--shadow);
+    max-width: 400px;
+    width: 100%;
+    text-align: center;
+}
+
+.login-logo {
+    margin-bottom: 2rem;
+}
+
+.login-logo .logo-icon {
+    font-size: 3rem;
+    color: var(--accent-color);
+}
+
+.login-logo h1 {
+    font-size: 2rem;
+    margin: 0.5rem 0;
+    color: var(--text-primary);
+}
+
+.login-subtitle {
+    color: var(--text-secondary);
+    margin: 0;
+}
+
+.login-form {
+    margin-top: 2rem;
+}
+
+.btn-full {
+    width: 100%;
+}
+
+.login-footer {
+    margin-top: 2rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--border-color);
+}
+
+.login-footer a {
+    color: var(--text-secondary);
+    text-decoration: none;
+    font-size: 0.9rem;
+}
+
+.login-footer a:hover {
+    color: var(--accent-color);
+}
+
+/* 登录页样式 */
+.login-container {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--bg-primary);
+    padding: 2rem;
+}
+
+.login-card {
+    background: var(--bg-secondary);
+    padding: 3rem;
+    border-radius: 16px;
+    box-shadow: var(--shadow);
+    max-width: 400px;
+    width: 100%;
+    text-align: center;
+}
+
+.login-logo {
+    margin-bottom: 2rem;
+}
+
+.login-logo .logo-icon {
+    font-size: 3rem;
+    color: var(--accent-color);
+}
+
+.login-logo h1 {
+    font-size: 2rem;
+    margin: 0.5rem 0;
+    color: var(--text-primary);
+}
+
+.login-subtitle {
+    color: var(--text-secondary);
+    margin: 0;
+}
+
+.login-form {
+    margin-top: 2rem;
+}
+
+.btn-full {
+    width: 100%;
+}
+
+.login-footer {
+    margin-top: 2rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--border-color);
+}
+
+.login-footer a {
+    color: var(--text-secondary);
+    text-decoration: none;
+    font-size: 0.9rem;
+}
+
+.login-footer a:hover {
+    color: var(--accent-color);
 }
 
 @media (max-width: 768px) {

@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nexora — 数据管理</title>
+    <link rel="stylesheet" href="/assets/css/admin.css">
+</head>
+<body>
+    <header class="admin-header">
+        <div class="admin-logo">
+            <a href="/" class="back-link">◈ Nexora</a>
+            <span class="page-title">数据管理</span>
+        </div>
+        <div class="header-actions">
+            <a href="/" class="btn btn-secondary">返回首页</a>
+        </div>
+    </header>
+
+    <main class="admin-main">
+        <section class="admin-section">
+            <h3>📤 导出</h3>
+            <p class="section-desc">将所有书签和设置导出为 JSON 文件，可用于备份或迁移。</p>
+            <button class="btn btn-primary" onclick="exportData()">📥 导出 JSON</button>
+        </section>
+
+        <section class="admin-section">
+            <h3>📥 导入</h3>
+            <p class="section-desc">从 JSON 文件恢复数据，将覆盖当前所有数据。</p>
+            <div class="import-area">
+                <input type="file" id="importFile" accept=".json" style="display:none" onchange="handleImport(event)">
+                <button class="btn btn-warning" onclick="document.getElementById('importFile').click()">📤 选择文件导入</button>
+            </div>
+        </section>
+
+        <section class="admin-section">
+            <h3>🗄️ 数据库</h3>
+            <p class="section-desc">查看当前数据统计信息。</p>
+            <div class="stats-grid" id="statsGrid">
+                <div class="stat-item">
+                    <div class="stat-value" id="totalBookmarks">0</div>
+                    <div class="stat-label">总书签数</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="totalCategories">0</div>
+                    <div class="stat-label">分类数</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="privateCount">0</div>
+                    <div class="stat-label">加密书签</div>
+                </div>
+            </div>
+        </section>
+
+        <section class="admin-section">
+            <h3>⚠️ 危险操作</h3>
+            <p class="section-desc">重置将清空所有数据，此操作不可恢复。</p>
+            <button class="btn btn-danger" onclick="resetAllData()">🗑️ 重置所有数据</button>
+        </section>
+    </main>
+
+    <script src="/assets/js/data-management.js"></script>
+</body>
+</html>

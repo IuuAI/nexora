@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nexora — 书签管理</title>
+    <link rel="stylesheet" href="/assets/css/admin.css">
+</head>
+<body>
+    <header class="admin-header">
+        <div class="admin-logo">
+            <a href="/" class="back-link">◈ Nexora</a>
+            <span class="page-title">书签管理</span>
+        </div>
+        <div class="header-actions">
+            <a href="/" class="btn btn-secondary">返回首页</a>
+        </div>
+    </header>
+
+    <main class="admin-main">
+        <section class="admin-section">
+            <div class="section-header">
+                <h3>🔖 书签列表</h3>
+                <div class="section-actions">
+                    <input type="text" id="searchBookmarks" placeholder="搜索书签..." oninput="filterBookmarks(this.value)">
+                    <button class="btn btn-add" onclick="showAddBookmark()">+ 添加书签</button>
+                </div>
+            </div>
+            <div class="bookmark-list" id="bookmarkList"></div>
+        </section>
+    </main>
+
+    <div class="modal" id="modal">
+        <div class="modal-content">
+            <span class="modal-close" onclick="closeModal()">&times;</span>
+            <div id="modalBody"></div>
+        </div>
+    </div>
+
+    <script src="/assets/js/bookmarks.js"></script>
+</body>
+</html>

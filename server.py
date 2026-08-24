@@ -90,8 +90,14 @@ def index():
 
 
 @app.route('/admin')
+@app.route('/admin/')
 def admin():
-    return send_from_directory(app.static_folder, 'index.html')
+    return send_from_directory('../admin', 'login.html')
+
+
+@app.route('/admin/<path:path>')
+def admin_pages(path):
+    return send_from_directory('../admin', path)
 
 
 @app.route('/assets/<path:path>')

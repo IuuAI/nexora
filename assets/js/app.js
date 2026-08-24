@@ -1,7 +1,8 @@
-// ===== Nexora — 导航中枢前端逻辑 (API版) =====
+// ===== Nexora — 首页逻辑 =====
 
 const API_BASE = window.location.origin;
 const THEME_KEY = 'nexora_theme';
+const TOKEN_KEY = 'nexora_admin_token';
 const CATEGORIES_DATA = {
     work: { icon: '💼', name: '工作' },
     life: { icon: '🏠', name: '生活' },
@@ -18,11 +19,21 @@ document.addEventListener('DOMContentLoaded', () => {
     loadSettings();
     loadBookmarks();
     setupEventListeners();
+    checkLoginStatus();
 });
 
 async function apiRequest(endpoint, options = {}) {
     try {
-        const res = await fetch(`${API_BASE}${endpoint}`, { ...options });
+        const headers = { 'Content-Type': 'application/json', ...options.headers };
+        const token = localStorage.getItem(TOKEN_KEY);
+        if (token) headers['X-Admin-Token'] = token;
+        
+        const res = await fetch(`${API_BASE}${endpoint}`, { ...options, headers });
+        if (res.status === 401) {
+            localStorage.removeItem(TOKEN_KEY);
+            updateFabMenu(false);
+            return { error: 'Unauthorized' };
+        }
         return await res.json();
     } catch (err) {
         console.error('API Error:', err);
@@ -33,6 +44,7 @@ async function apiRequest(endpoint, options = {}) {
 function initTheme() {
     const saved = localStorage.getItem(THEME_KEY) || 'light';
     document.documentElement.setAttribute('data-theme', saved);
+    
     document.getElementById('themeToggle').addEventListener('click', () => {
         const current = document.documentElement.getAttribute('data-theme');
         const next = current === 'dark' ? 'light' : 'dark';
@@ -53,6 +65,12 @@ async function loadSettings() {
     }
 }
 
+async function loadBookmarks() {
+    const data = await apiRequest('/api/bookmarks');
+    bookmarks = Array.isArray(data) ? data : [];
+    renderCategories();
+}
+
 function setupEventListeners() {
     document.querySelectorAll('.nav-item').forEach(item => {
         item.addEventListener('click', (e) => {
@@ -62,18 +80,15 @@ function setupEventListeners() {
             renderCategories(e.target.dataset.filter);
         });
     });
+    
     document.getElementById('searchInput').addEventListener('input', debounce((e) => {
         renderCategories(null, e.target.value);
     }, 300));
+    
+    // FAB 按钮
     document.getElementById('fabBtn').addEventListener('click', () => {
-        window.location.href = '/admin/';
+        window.location.href = '/admin/login.html';
     });
-}
-
-async function loadBookmarks() {
-    const data = await apiRequest('/api/bookmarks');
-    bookmarks = Array.isArray(data) ? data : [];
-    renderCategories();
 }
 
 function renderCategories(filter = 'all', search = '') {
@@ -178,4 +193,31 @@ function debounce(fn, delay) {
         clearTimeout(timer);
         timer = setTimeout(() => fn.apply(this, args), delay);
     };
+}
+
+function checkLoginStatus() {
+    const token = localStorage.getItem(TOKEN_KEY);
+    updateFabMenu(!!token);
+}
+
+function updateFabMenu(isLoggedIn) {
+    const fabBtn = document.getElementById('fabBtn');
+    const fabMenu = document.getElementById('fabMenu');
+    
+    if (isLoggedIn) {
+        fabBtn.style.display = 'none';
+        fabMenu.style.display = 'flex';
+        
+        document.getElementById('backToHomeBtn').onclick = () => {
+            window.location.href = '/';
+        };
+        
+        document.getElementById('logoutBtn').onclick = () => {
+            localStorage.removeItem(TOKEN_KEY);
+            window.location.href = '/admin/login.html';
+        };
+    } else {
+        fabBtn.style.display = 'flex';
+        fabMenu.style.display = 'none';
+    }
 }

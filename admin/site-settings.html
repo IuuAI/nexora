@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nexora — 站点设置</title>
+    <link rel="stylesheet" href="/assets/css/admin.css">
+</head>
+<body>
+    <header class="admin-header">
+        <div class="admin-logo">
+            <a href="/" class="back-link">◈ Nexora</a>
+            <span class="page-title">站点设置</span>
+        </div>
+        <div class="header-actions">
+            <a href="/" class="btn btn-secondary">返回首页</a>
+        </div>
+    </header>
+
+    <main class="admin-main">
+        <section class="admin-section">
+            <h3>⚙️ 基础设置</h3>
+            <div class="settings-form">
+                <div class="form-group">
+                    <label>站点名称</label>
+                    <input type="text" id="siteName" placeholder="Nexora" maxlength="50">
+                    <span class="form-hint">显示在页头和标题栏</span>
+                </div>
+                <div class="form-group">
+                    <label>站点副标题</label>
+                    <input type="text" id="siteSubtitle" placeholder="科技驱动的导航中枢" maxlength="100">
+                    <span class="form-hint">显示在页脚</span>
+                </div>
+                <div class="form-group">
+                    <label>管理密码</label>
+                    <input type="password" id="adminPassword" placeholder="请输入新密码">
+                    <span class="form-hint">留空保持原密码不变</span>
+                </div>
+                <button class="btn btn-primary" onclick="saveSettings()">💾 保存设置</button>
+            </div>
+        </section>
+
+        <section class="admin-section">
+            <h3>🎨 外观设置</h3>
+            <div class="settings-form">
+                <div class="form-group">
+                    <label>默认主题</label>
+                    <select id="defaultTheme" style="width:100%;padding:12px;border:1px solid var(--border-color);border-radius:8px">
+                        <option value="light">浅色</option>
+                        <option value="dark">深色</option>
+                        <option value="auto">跟随系统</option>
+                    </select>
+                </div>
+                <button class="btn btn-primary" onclick="saveAppearance()">💾 保存外观</button>
+            </div>
+        </section>
+    </main>
+
+    <script src="/assets/js/site-settings.js"></script>
+</body>
+</html>

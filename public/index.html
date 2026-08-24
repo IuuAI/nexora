@@ -44,8 +44,25 @@
         </div>
     </footer>
 
-    <!-- 功能按钮 -->
-    <button class="fab-btn" id="fabBtn" title="管理控制台">⚙️</button>
+    <!-- 右下角功能区 -->
+    <div class="fab-container" id="fabContainer">
+        <!-- 未登录状态 -->
+        <button class="fab-btn" id="fabBtn" title="管理控制台">
+            <span class="fab-icon">⚙️</span>
+        </button>
+        
+        <!-- 已登录状态 -->
+        <div class="fab-menu" id="fabMenu" style="display:none;">
+            <button class="fab-item" id="backToHomeBtn" title="返回首页">
+                <span>🏠</span>
+                <span>首页</span>
+            </button>
+            <button class="fab-item" id="logoutBtn" title="退出登录">
+                <span>🚪</span>
+                <span>退出</span>
+            </button>
+        </div>
+    </div>
 
     <script src="/assets/js/app.js"></script>
 </body>
