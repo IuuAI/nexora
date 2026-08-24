@@ -6,6 +6,21 @@ export default {
     const url = new URL(request.url);
     if (request.method === 'OPTIONS') return new Response(null, { headers: corsHeaders() });
     try {
+      // 确保 categories 表存在
+      await env.NEXORA_D1.prepare(`
+        CREATE TABLE IF NOT EXISTS categories (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          key TEXT UNIQUE NOT NULL,
+          name TEXT NOT NULL,
+          created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )
+      `).run();
+      // 插入默认分类（如果不存在）
+      await env.NEXORA_D1.prepare(`
+        INSERT OR IGNORE INTO categories (key, name) VALUES
+        ('work', '工作'), ('life', '生活'), ('tech', '技术'),
+        ('tools', '工具'), ('social', '社交'), ('media', '娱乐')
+      `).run();
       if (url.pathname === '/api/bookmarks' && request.method === 'GET') return handleGetBookmarks(env, request);
       if (url.pathname === '/api/bookmarks' && request.method === 'POST') return handleCreateBookmark(env, request);
       if (/^\/api\/bookmarks\/\d+$/.test(url.pathname) && request.method === 'PUT') return handleUpdateBookmark(env, request);
