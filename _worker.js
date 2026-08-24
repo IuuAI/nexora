@@ -42,7 +42,7 @@ export default {
       if (url.pathname === '/api/settings' && method === 'GET') {
         return handleGetSettings(env);
       }
-      if (url.pathname.match(/^\/api\/settings\/.+/) && method === 'PUT') {
+      if (url.pathname.startsWith('/api/settings/') && method === 'PUT') {
         return handleUpdateSetting(env, request);
       }
       if (url.pathname === '/api/export' && method === 'GET') {
@@ -57,7 +57,7 @@ export default {
       if (url.pathname === '/api/backup/list' && method === 'GET') {
         return handleListBackups(env);
       }
-      if (url.pathname.match(/^\/api\/backup\/download\/.+/) && method === 'GET') {
+      if (url.pathname.startsWith('/api/backup/download/')) {
         return new Response('备份下载功能需要在本地部署使用', { status: 501 });
       }
       if (url.pathname.match(/^\/api\/backup\/delete\/.+/) && method === 'DELETE') {
