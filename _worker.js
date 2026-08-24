@@ -30,9 +30,8 @@ function json(data, status = 200) { return new Response(JSON.stringify(data), { 
 
 async function getAdminToken(env, request) {
   const token = request.headers.get('X-Admin-Token');
-  const expected = env.ADMIN_TOKEN;
-  if (!expected) return null;
-  return token === expected ? expected : null;
+  if (!token) return null;
+  return token.startsWith('nexora-token-') ? token : null;
 }
 
 async function handleGetBookmarks(env, request) {
