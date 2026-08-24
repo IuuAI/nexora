@@ -6,16 +6,11 @@ compatibility_date = "2024-01-01"
 [[d1_databases]]
 binding = "NEXORA_D1"
 database_name = "nexora"
-database_id = "YOUR_D1_DATABASE_ID"
+database_id = "483a63d4-5144-4024-ab6c-5373f3835ecd"
 
 # 环境变量
 [vars]
 ADMIN_PASSWORD = "nexora2024"
-ADMIN_TOKEN = ""  # 留空则不验证token
-
-# Pages 部署配置
-[pages]
-production_branch = "main"
 
 # 构建配置
 [build]
